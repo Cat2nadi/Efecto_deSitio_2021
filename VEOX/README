@@ -1,0 +1,22 @@
+
+	MASE Seismic Transfer Program
+	     R. Clayton, Caltech
+	       March, 2005
+
+	The program 'MASEstp' is the client side of a seismogram
+transfer system of the Tectonics Observatory.  The defualt settings
+in the program will connect to the Tectonics Observatory server.
+This program has similar but more limited functionality compared with
+the 'stp' interface of the Southern California Earthquake Data Center.
+
+	To create the client program on your machine, execute
+		make MASEstp       (on UNIX-solaris computers)
+		make linux_MASEstp (on Linux and Mac)S/X machines)
+
+	To get started with the program execute
+		MASEstp
+and at the prompt type 'help'. If you want a test run try
+STP> verbose
+STP> input test
+STP> quit
+

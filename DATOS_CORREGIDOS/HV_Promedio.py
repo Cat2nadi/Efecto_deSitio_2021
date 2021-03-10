@@ -1,0 +1,140 @@
+##### Programa que saca el H/V promedio para las estaciones
+import os
+import math
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import statistics as stats
+import sys
+import os.path as path
+from os import remove
+
+print("************************************")
+print("*H/V PROMEDIO POR ESTACIÓN***")
+print("************************************")
+file = open('Estaciones_VEOX.txt')
+line=file.read().replace("\n",",")
+estaciones=np.array(line.split(","))
+#print(estaciones)
+#print(type(estaciones))
+#print(estaciones[5])
+dr=50/1024
+fr=np.arange(0,50,dr)#Frecuencia
+g1=0
+file.close()
+#print (dr , fr)
+
+est=1
+ID = open('ID_ENTRADA.txt')
+ID2=ID.read().replace("\n",",")
+ID.close()
+n0=len(ID2)//15#Número de eventos en total utilizados
+#print(n2)
+ii=0
+HV1=np.zeros((1024))
+gg=0
+
+#Recorre las estaciones del Arreglo
+for i in range(3):#42
+    j=ii+4
+    #print(ii,j)
+    ee=line[ii:j]
+    print(ee)
+    ii=j+1
+    name_p=ee #Nombre de la estación
+
+    n1=0
+    #Eventos por estación
+    EPE=0
+    #Inicializar Efecto de sitio por estación
+    HV2=np.zeros(1024)
+    HV3=np.zeros(1024)
+    HV1_MATRIZ=np.zeros((1024,n0))
+    #EXISTE_MATRIZ=np.zeros((50,n0))
+    HVPROM=np.zeros(1024)
+    HVDESV=np.zeros(1024)
+    #plt.figure()
+
+    for nn in range(n0):#n0 número de eventos
+        n2=n1+14
+        ID3=ID2[n1:n2]
+        c_name=ee+'_'+ID3+'.txt'#Estacion+ID
+        print(c_name)
+        n1=n2+1
+        #Revisa que en la fecha del evento este la estacion
+        if (path.exists(c_name)):
+
+            #Primer criterio
+            HV1=np.loadtxt(c_name)
+            maximo=max(HV1)
+            minimo=min(HV1)
+            #print(c_name)
+            #print(maximo,minimo)
+
+            #Remover archivos con valores menores
+            if (maximo > 10 or minimo < 0.1):
+               remove(c_name)
+
+        if (path.exists(c_name)):
+
+            for j in  range (len(estaciones)):
+                if (estaciones[j] == name_p):
+                    indice=j
+                    print(estaciones[indice])
+
+            #EXISTE_MATRIZ[indice,nn]=1
+            EPE=EPE+1
+            #HV1=np.loadtxt(c_name)
+            for f in range(len(HV1)):
+                HV1_MATRIZ[f,nn]=HV1[f]
+
+            for kk in range(len(HV1)):
+                HV2[kk]=HV2[kk]+HV1[kk]
+                HV3[kk]=HV3[kk]+HV1[kk]**2
+            for g in range(len(HV2)):
+                HVPROM[g]=HV2[g]/EPE
+                HVDESV[g]=np.sqrt(abs((HV3[g]/(EPE-1))-((HV2[g]/(EPE-1))**2)))
+                gg=g+g1
+
+
+
+                name=estaciones[indice]+'.txt'#Guardar mi HV Promedio
+                name_g=estaciones[indice]
+                fsalida = open(name, 'w')
+                for q in range(len(HVPROM)):
+                    fsalida.write('%10.4f\t%10.4f\n' % (HVPROM[q],HVDESV[q]))
+                fsalida.close()
+
+            fig= plt.figure()
+            ax=plt.axes()
+
+            plt.title(name_g)
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            plt.grid(True,which="both",ls="-")
+            ax.set_ylim(0.1, 10)
+            ax.set_xlim(0.1, 50)
+            ax.set_xlabel('Frecuencia [Hz]')
+            ax.set_ylabel('Amplitud')
+            for nn in range(n0):
+                plt.plot(fr,HV1_MATRIZ[:,nn],'0.5')
+
+            plt.plot(fr,HVPROM,'0.0')
+
+            plt.savefig(name_g)
+            plt.close(fig)
+            plt.show()
+
+
+
+
+
+    #for nr in range(len(HVPROM)):
+        g1=gg+1
+    #ALL=np.zeros(estaciones*1024)
+    #print(len(ALL))
+        est=est+1
+
+    #pfsalida.close()
+##########################################################
+##############      GRÁFICAS       #######################

@@ -1,0 +1,11 @@
+r  *.sac
+ch EVLO -95.03
+ch EVLA 15.78
+ch EVDP 025
+wh
+rtrend  
+rmean  
+taper   
+TRANS FROM POLEZERO S R3T.paz TO VEL freq 0.01 0.02 40.0 50.0
+w over
+quit
